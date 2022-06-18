@@ -53,7 +53,7 @@ def main():
     cloudsat_file_list = os.listdir(cloudsatFilePath)
     # print(mac_file_list)
 
-    for i in range(2,len(mac_file_list)):
+    for i in range(1,len(mac_file_list)):
         macPath = "../data/MAC/" + date + '/'+ mac_file_list[i]
         readmac(macPath)
         print(mac_file_list[i] + " ok")
@@ -96,7 +96,7 @@ def readcloudsat(src):
 
 if __name__ == '__main__':
     print("start...")
-    # main()
+    main()
 
     # src = '../data/MAC/20080101/MAC06S1.A2008001.2355.002.2017074162514.hdf'
     src = '../data/MAC/20080101x/MAC06S1.A2008001.2355.002.2017074162514.hdf'
@@ -133,7 +133,7 @@ if __name__ == '__main__':
         lati = lat[i]
         ax3.scatter(long,lati,s=3,c='blue', alpha=1, linewidths=0.5,)
 
-    plt.show()
-    # fig.savefig("../img/2008年1月1日 MAC与Cloudsat的地理匹配.png", dpi=2000)
+    # plt.show()
+    fig.savefig("../img/2008年1月1日 MAC与Cloudsat的地理匹配.png", dpi=2000)
 
     print("ok!")
