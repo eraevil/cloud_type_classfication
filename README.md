@@ -10,3 +10,19 @@ Based on deep-learing classifying cloud type
 > 数据匹配方案
 按计算cloudsat廓线点到modis像元的距离，将cloudsat廓线点标记为最近modis像元所属点，计算同一modis像元的clousat云类型均值作为与该像元匹配的数据。
 
+> 数据说明
+- Cloudsat卫星云分类产品数据
+
+CloudSat 卫星也是美国地球观测系统 EOS 中的太阳同步极轨卫星，于 2006 年 4 月 28 日成功发射，和其他 4 颗卫星(Aqua、Aura、CALIPSO 和 PARASOL)组成  “A-Train” 卫星编队。它的轨道高度是 705km，倾角是 98.2°，卫星绕地球一周被称作一个扫描轨道，一个轨道的扫描时间是 99min 左右。
+
+![image](https://user-images.githubusercontent.com/35321279/178888589-6fd089bd-728b-436c-b58b-5076f4382fb8.png)
+
+
+![image](https://user-images.githubusercontent.com/35321279/178888432-41f4f589-2b4c-4e00-b3b0-f446c62b8cfe.png)
+
+每天大约有 14、15 个扫描轨道，扫描长度是40022km 左右，每个轨道有 36383 个星下像素点（扫描廓线点）。
+
+![image](https://user-images.githubusercontent.com/35321279/178888518-bfdfbcce-9656-4573-9452-6298fe048673.png)
+
+每个垂直剖面每隔 240m 就会获得一个扫描数据，从高空到地面一共可以获得 125 个不同高度上的数据，这也就是说它的垂直探测的高度是 30km 左右。
+
