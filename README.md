@@ -22,7 +22,16 @@ CloudSat 卫星也是美国地球观测系统 EOS 中的太阳同步极轨卫星
 
 每天大约有 14、15 个扫描轨道，扫描长度是40022km 左右，每个轨道有 36383 个星下像素点（扫描廓线点）。
 
+![image](https://user-images.githubusercontent.com/35321279/179341797-bbb875f0-6f6e-43b9-904c-dc88afb5570e.png)
+
 ![image](https://user-images.githubusercontent.com/35321279/178888518-bfdfbcce-9656-4573-9452-6298fe048673.png)
 
 每个垂直剖面每隔 240m 就会获得一个扫描数据，从高空到地面一共可以获得 125 个不同高度上的数据，这也就是说它的垂直探测的高度是 30km 左右。
+
+![image](https://user-images.githubusercontent.com/35321279/179341756-df72bb00-f633-4601-94ea-8aa06a0bdce7.png)
+
+通过对cloudsat云类型数据解码可以得到各个廓线点，垂直高度上125层的云类型数据，将该数据作为该点的labels，后续进行模型学习。
+
+
+
 
