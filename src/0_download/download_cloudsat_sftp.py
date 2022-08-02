@@ -53,7 +53,7 @@ def download(year,dest,csv_path):
 
 if __name__ == '__main__':
     print("开始下载Cloudsat数据")
-    startday = '20080101'
+    startday = '20080919'
     endday = '20081232'
     year = startday[0:4]
     startDoy = date2julian(startday)

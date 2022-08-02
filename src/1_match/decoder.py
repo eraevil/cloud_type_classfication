@@ -5,6 +5,7 @@ from pyhdf.VS import *
 from pyhdf.SD import *
 
 def decoderScenario(filepath):
+    # d = data.astype(np.uint16)
     hdf = SD(filepath)
     cloudscenario = hdf.select('cloud_scenario')
     cloudscenarioV = cloudscenario.get()
