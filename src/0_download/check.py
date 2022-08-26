@@ -19,3 +19,5 @@ for day in days:
             sizex = os.path.getsize(target_path+'\\'+day+'\\'+daysfile) / 1024
             if sizex < 10000:
                 print(day,daysfile,sizex)
+            if sizex > 10800:
+                print(day, daysfile, sizex)
