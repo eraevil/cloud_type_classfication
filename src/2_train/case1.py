@@ -217,6 +217,10 @@ def model2(features,chunk_num,lossA):
     lossA.append(chunk_loss)
     print("chunk", chunk_num, " loss: ", chunk_loss)
     torch.save(net.state_dict(),model_path)
+    import csv
+    with open('lossA.csv', 'a',newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow([str(chunk_loss)])
     return lossA
 
 
@@ -254,8 +258,8 @@ if __name__ == '__main__':
         # print('chunk.type: ',type(chunk))
         chunk_num += 1
         lossA = model2(chunk, chunk_num,lossA)
-        if chunk_num == 50:
-            break
+        # if chunk_num == 50:
+        #     break
 
     import matplotlib.pyplot as plt
     plt.plot(lossA)
