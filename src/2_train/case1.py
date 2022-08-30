@@ -102,14 +102,19 @@ class Model(nn.Module):
     def __init__(self):
         super(Model, self).__init__()
         self.model = nn.Sequential(
-            nn.Linear(7, 64,bias=True),
-            nn.Linear(64, 128,bias=True),
-            nn.Linear(128, 256, bias=True),
-            nn.Linear(256, 512, bias=True),
-            nn.Linear(512, 256, bias=True),
-            nn.Linear(256, 128, bias=True),
-            nn.Linear(128, 64, bias=True),
-            nn.Linear(64, 32, bias=True),
+            nn.Linear(7, 64,bias=True),nn.ReLU(),
+            # nn.Linear(64, 128, bias=True), nn.ReLU(),
+            # nn.Linear(128, 64, bias=True), nn.ReLU(),
+            # nn.Linear(64, 32, bias=True), nn.ReLU(),
+            nn.Linear(64, 128,bias=True),nn.ReLU(),
+            nn.Linear(128, 256, bias=True),nn.ReLU(),
+            nn.Linear(256, 512, bias=True),nn.ReLU(),
+            nn.Linear(512, 1024, bias=True),nn.ReLU(),
+            nn.Linear(1024, 512, bias=True),nn.ReLU(),
+            nn.Linear(512, 256, bias=True),nn.ReLU(),
+            nn.Linear(256, 128, bias=True),nn.ReLU(),
+            nn.Linear(128, 64, bias=True),nn.ReLU(),
+            nn.Linear(64, 32, bias=True),nn.ReLU(),
             nn.Linear(32, 1, bias=True),
         )
 
@@ -117,9 +122,9 @@ class Model(nn.Module):
         x = self.model(x)
         return x
 
-def model2(features,chunk_num,lossA):
+def model2(features,chunk_num,lossA,lr):
     # 对云顶高度进行预报
-    model_path = "model_082601.pkl"
+    model_path = "./model/model_083003.pkl"
 
     # 数据预处理
     features['index'] = range(len(features))
@@ -145,6 +150,10 @@ def model2(features,chunk_num,lossA):
 
     trains = features.loc[:, ['bt0', 'bt1', 'bt2', 'bt3', 'bt4', 'bt5', 'bt6']]
     trains = np.array(trains)
+    # 数据归一化
+    from sklearn import preprocessing
+    trains = preprocessing.MinMaxScaler().fit_transform(trains)
+    # print("空值：",np.any(np.isnan(trains)))
     # print('trains:')
     # print(trains)
     # print('trains_features',features.shape)
@@ -168,7 +177,7 @@ def model2(features,chunk_num,lossA):
         dataset=train_data, # 使用的数据集
         batch_size=batch_size, # 批处理样本大小
         shuffle=True, # 每次迭代前打乱数据
-        num_workers=1, # 使用两个进程
+        num_workers=8, # 使用两个进程
     )
     # test_dataloader = Data.DataLoader(test_data, batch_size=batch_size)
 
@@ -176,7 +185,7 @@ def model2(features,chunk_num,lossA):
     train_data_size = len(train_data)
     # test_data_size = len(test_data)
 
-    lr = 0.000002  # 学习率
+    # lr = 0.0000001  # 学习率
     gamma = 0.9  # 动量
 
     # 实例化网络
@@ -191,36 +200,57 @@ def model2(features,chunk_num,lossA):
     # 定义损失函数
     # criterion = nn.CrossEntropyLoss()
     # criterion = nn.MSELoss(reduction = "mean")
-    criterion = nn.L1Loss()
-    # criterion = nn.MSELoss()
-    criterion = nn.SmoothL1Loss()
+    # criterion = nn.L1Loss()
+    criterion = nn.MSELoss()
+    # criterion = nn.SmoothL1Loss()
     opt = optim.SGD(net.parameters(), lr=lr, momentum=gamma)
+
+    # 截断梯度
+    # torch.nn.utils.clip_grad_norm_(net.parameters(), 0.25)
 
     loss_array = []
     for batch_idx, (x, y) in enumerate(train_loader):
+        opt.zero_grad()
         x = x.to(device=torch.device('cuda' if USE_CUDA else 'cpu'))
         y = y.to(device=torch.device('cuda' if USE_CUDA else 'cpu'))
         yhat = net(x)
         yhat = yhat.to(device=torch.device('cuda' if USE_CUDA else 'cpu'))
-        
+
+        # yhat[yhat == float("Inf")] = 0
         y.resize_(yhat.shape)
         # 查看预测值和真实值
         # for i in range(len(yhat)):
         #     print(yhat[i],y[i])
         loss = criterion(yhat, y)
         # print(batch_idx, "loss: ", float(loss),yhat[0],y[0])
+
+
+
         loss_array.append(float(loss))
         loss.backward()
+
+        # 检查权重和梯度是否在更新
+        for params in net.named_parameters():
+            [name, param] = params
+
+            if param.grad is not None:
+                print(name, end='\t')
+                print('weight:{}'.format(param.data.mean()), end='\t')
+                print('grad:{}'.format(param.grad.data.mean()))
+
         opt.step()
-        opt.zero_grad()
+
     chunk_loss = sum(loss_array)/len(loss_array)
     lossA.append(chunk_loss)
     print("chunk", chunk_num, " loss: ", chunk_loss)
     torch.save(net.state_dict(),model_path)
     import csv
-    with open('lossA.csv', 'a',newline='') as f:
+    with open('./loss/loss_083003.csv', 'a',newline='') as f:
         writer = csv.writer(f)
         writer.writerow([str(chunk_loss)])
+
+
+
     return lossA
 
 
@@ -240,16 +270,26 @@ def get_data(header,nrows):
     features = features.drop(index=index2)
     return features
 
+def check_loss_curve():
+    df = pd.read_csv('./loss/loss_083003.csv')
+    # print(df.info)
+    import matplotlib.pyplot as plt
+    # plt.scatter(range(len(df)),df)
+    plt.plot(df)
+    titlestr = "第" + str(i) + "次训练后损失值曲线"
+    plt.rcParams['font.sans-serif'] = ['SimHei']
+    plt.rcParams['axes.unicode_minus'] = False
+    plt.title(titlestr)
+    plt.show()
 
-if __name__ == '__main__':
-    print("读取数据")
-    # features = get_data(0,10000000)
-    test_data = get_data(10001,5000)
-    print('test_data.type: ',type(test_data))
-    names = np.array(pd.read_csv('../../data/DoneData/2008.csv', header=None, nrows=1))[0]
-    df = pd.read_csv('../../data/DoneData/2008.csv', header=0, chunksize=100000,names=names)
-    print("数据读取完毕")
+def train(epoch):
+    df = pd.read_csv('../../data/DoneData/2008.csv', header=0, chunksize=100000, names=names)
+    print("第",epoch,"次训练 数据读取完毕")
     print("准备训练")
+
+    lr = 0.00000001  # 基础学习率
+    lr = lr / (2 * (epoch+1))
+    print("学习率：",lr)
 
     chunk_num = 0
     lossA = []
@@ -257,13 +297,34 @@ if __name__ == '__main__':
     for chunk in df:
         # print('chunk.type: ',type(chunk))
         chunk_num += 1
-        lossA = model2(chunk, chunk_num,lossA)
+
+        # TODO LIST
+        lossA = model2(chunk, chunk_num, lossA,lr) # 训练10万条数据
+
         # if chunk_num == 50:
         #     break
+    check_loss_curve() # 查看累计损失曲线
 
-    import matplotlib.pyplot as plt
-    plt.plot(lossA)
-    plt.show()
+
+if __name__ == '__main__':
+    print("读取数据")
+    # features = get_data(0,10000000)
+    # test_data = get_data(10001,5000)
+    # print('test_data.type: ',type(test_data))
+    names = np.array(pd.read_csv('../../data/DoneData/2008.csv', header=None, nrows=1))[0]
+    from time import time
+
+    t = time()  # 开始时间
+    print("开始计时")
+
+    for i in range(10):
+        train(i)
+
+    print('时间消耗：%.2f秒' % (time() - t))
+
+    # import matplotlib.pyplot as plt
+    # plt.plot(lossA)
+    # plt.show()
 
 
 
