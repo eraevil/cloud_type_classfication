@@ -1,6 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+projectroot = "D:\project\cloud_type_classfication"
+
+
 import wget
 import subprocess
 import os
@@ -53,8 +56,8 @@ def download(year,dest,csv_path):
 
 if __name__ == '__main__':
     print("开始下载Cloudsat数据")
-    startday = '20080919'
-    endday = '20081232'
+    startday = '20090101'
+    endday = '20091232'
     year = startday[0:4]
     startDoy = date2julian(startday)
     endDoy = date2julian(endday)
@@ -65,8 +68,8 @@ if __name__ == '__main__':
     flags = np.array(np.zeros((len(doys),3)))
     flags[:,0] = doys
     flags[:,1] = date_list
-    csv_path = r'E:\Code\python\cloudclassfication\data\CloudSat\flags.csv'
-    dest = r'E:\Code\python\cloudclassfication\data\CloudSat'
+    csv_path = projectroot + r'\data\CloudSat\flags.csv'
+    dest = projectroot + r'\data\CloudSat'
     if not os.path.exists(csv_path):
         pd.DataFrame(flags).to_csv(csv_path,index=False)
     df = np.array(pd.read_csv(csv_path))
