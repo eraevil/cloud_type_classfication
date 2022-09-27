@@ -36,3 +36,8 @@ CloudSat 卫星也是美国地球观测系统 EOS 中的太阳同步极轨卫星
 - MODIS卫星产品数据
 MOD06S0  
 
+MAC06S0
+
+MAC03S0
+
+- CLIPSO卫星产品数据
