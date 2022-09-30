@@ -39,12 +39,12 @@ MOD06S0
 
 MAC06S0
 
-使用该数据集的1km分辨率数据，包含cpi、ctp、cth、ctt、sft、ce、ce11等云光学及物理性质
+> 使用该数据集的1km分辨率数据，包含cpi、ctp、cth、ctt、sft、ce、ce11等云光学及物理性质
 
 MAC03S0
 
-包含与MAC06S0数据集1km分辨率重合的地理信息lon、lat
+> 包含与MAC06S0数据集1km分辨率重合的地理信息lon、lat
 
 - CLIPSO卫星产品数据
 
-包含云分类信息，需要解码
+> 包含云分类信息，需要解码
