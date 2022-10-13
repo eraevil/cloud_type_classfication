@@ -5,7 +5,7 @@ Based on deep-learing classifying cloud type
 - [X] 数据下载
 - [X] 数据匹配，形成数据集
 - [X] 训练
-- [ ] 调参优化
+- [X] 调参优化
 
 
 > 数据匹配方案
